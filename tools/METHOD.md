@@ -18,10 +18,23 @@ These are expat listings. Every listing must be in English or not depend on lang
 
 ## Coverage window
 
-- List events from the run date to the end of the current month.
-- From the 20th of a month, also include the following month.
-- Titles say which month(s) are covered, e.g. "Music — November–December 2026".
+- List only events within 30 days of the run date (run date to run date + 30). `build.py` enforces this: set `RUN_DATE` and it drops dates outside the window. Exhibitions are listed while they are open, even if they close after the window.
+- Page titles show the window, e.g. "Music · 31 Oct – 30 Nov 2026". The build writes these automatically.
 - Drop anything that has already happened. Drop exhibitions that have closed.
+
+## Tickets rule
+
+- List an event only if tickets are on sale or an entry price is published. Free entry counts.
+- Leave out anything with tickets TBA, TBC, "coming soon" or no published price. `build.py` refuses to build if a price contains TBA, TBC, "soon" or similar.
+- Re-check each run whether held-back events have gone on sale, and add them when they have.
+
+## Tone
+
+- Describe each listing neutrally. The pages inform; they don't sell.
+- State what it is, who performs or made it, the programme, length and age rating, and any practical conditions (language, ticket rules, closures).
+- No superlatives or hype ("must-see", "unmissable", "legendary", "don't miss", "world-class"), no exclamation marks, no urging people to book.
+- Badges are factual only: language access, "Free", "Few seats left", "Closes …", "New production", age ratings. No promotional badges such as "Big match".
+- No subtitle under the page title and no footer note ("Listings checked on…").
 
 ## Sources and how to read them
 
@@ -39,7 +52,8 @@ The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha
 - **Afisha.uz (RU)**: exhibitions (`/ru/exhibitions`), extra Navoi operas (venue schedule at `/ru/places/teatr-alishera-navoi`), small gigs (`/ru/concerts`) and cinema (`/ru/cinema`). Image is the article's og:image (`…_m.webp`).
 - **Ilkhom Theatre**: the full month is at `https://ilkhom.com/wp-admin/admin-ajax.php?action=wcs_get_events_json&start=YYYY-MM-DD&end=YYYY-MM-DD`. Times are labelled +00:00 but are actually local. Include only shows whose title contains "eng. subs" (English surtitles). Ilkhom concerts, such as IlkhomJazzClub, count as music.
 - **Cinematica English Movie Club** (Tashkent City Mall): the club's Instagram @englishmovieclubuz posts a monthly list of English-language titles with start dates. Each title then usually plays nightly at 20:30 for a week, in 2D with no subtitles.
-  - Cinematica's own API doesn't flag language. Use `https://cinematica.uz/api/v1/movies/soon` and `/movies/{id}` only for posters (`file_poster`, horizontal) and release dates.
+  - Cinematica's own API doesn't flag language. Use `https://cinematica.uz/api/v1/movies/soon` and `/movies/{id}` for posters (`file_poster`, horizontal) and release dates, and `/api/v1/repertory/movie/{id}/grouped` to see whether sessions are on sale. Add a film only once it has sessions (tickets rule).
+  - November 2026 lineup, held back on 31 Oct because no sessions were on sale yet: The Cat in the Hat (movie id 1049, from 5 Nov), Ebenezer: A Christmas Carol (from 12 Nov), The Hunger Games: Sunrise on the Reaping (id 1071, from 19 Nov). Add each when its sessions appear.
   - If Instagram can't be read, keep the existing club cards and flag it in the summary.
 - **kinoxona art cinema** (17 Chimkent St): films are shown in the original language with Russian subtitles. Include only English-language films, plus films with no dialogue. The programme appears about a week ahead on ShowGo (venue "Кинозал Чимкент, 17").
 - **CCA Tashkent**: `https://ccat.uz/en/programme/...`. Check the homepage for closure notices.
@@ -47,11 +61,11 @@ The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha
 
 ## Building
 
-All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE, DANCE_DEC and SPORT lists). Edit the data there.
+All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and SPORT lists). Edit the data there. Items can carry dates beyond the window; the build keeps only the dates inside it.
 
 - Write descriptions in plain English, in your own words, and don't copy source text.
-- Badges: "In English", "English surtitles", "No dialogue", "No language needed", "Free", "Few seats left" (under about 60 tickets left), "Closes …", "Premiere".
-- Set `CHECKED` to the run date.
+- Badges: "In English", "English surtitles", "No dialogue", "Visual show", "Free", "Few seats left" (under about 60 tickets left), "Closes …", "New production".
+- Set `RUN_DATE` to the run date.
 - `python3 tools/build.py live` writes the pages to the repo root, which is what the site shows.
 - `python3 tools/build.py preview` writes them to `/preview/` for review.
 
@@ -59,7 +73,7 @@ All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE, DANC
 
 1. Every event URL returns 200. Fake slugs return 404 on iTicket, ShowGo and Afisha, so the check is meaningful.
 2. Every image loads, and none is a generic placeholder.
-3. Every listing obeys the audience rule and the coverage window.
+3. Every listing obeys the audience rule, the 30-day window, the tickets rule and the tone rule.
 4. Every date and weekday is correct, with times in Tashkent time.
 
 ## Publishing workflow
