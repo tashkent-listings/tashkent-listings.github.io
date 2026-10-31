@@ -12,7 +12,9 @@ Owner: Louis Train (GitHub account `tashkent-listings`). The site is Google Site
 
 These are expat listings. Every listing must be in English or not depend on language:
 
-- Allowed: music of any kind, opera (it's sung), ballet and dance, visual art, photography, sport, circus and other visual shows, films in English, and films with no dialogue.
+- Allowed: ballet and dance, visual art, photography, sport, circus and other visual shows, films in English, and films with no dialogue.
+- Music: include instrumental music (classical, organ, jazz, orchestral film-music and tribute concerts), opera (the words aren't meant to be followed), and music sung in English. International acts singing in other languages are fine (e.g. Cheb Mami).
+- Music to leave out: Uzbek and Russian-language pop, estrada, rap and rock, including CIS acts singing in Russian. It depends too much on cultural context. Also leave out shows built around a regional celebrity (e.g. a Turkish TV-series actor with an orchestra).
 - Plays, comedy, operetta, talks and kids' shows in Russian or Uzbek are excluded unless they have English surtitles.
 - Do not list events outside Tashkent. ShowGo carries many regional concerts in Samarkand, Bukhara, Qarshi and Jizzakh, so check the venue.
 
@@ -25,7 +27,8 @@ These are expat listings. Every listing must be in English or not depend on lang
 ## Tickets rule
 
 - List an event only if tickets are on sale or an entry price is published. Free entry counts.
-- Leave out anything with tickets TBA, TBC, "coming soon" or no published price. `build.py` refuses to build if a price contains TBA, TBC, "soon" or similar.
+- Leave out anything with tickets TBA, TBC, "coming soon" or no published price.
+- Exception: Cinematica's English-language films are listed from their announced start date even before showtimes go on sale (see Cinematica below). `build.py` refuses to build if a price contains TBA, TBC, "soon" or similar.
 - Re-check each run whether held-back events have gone on sale, and add them when they have.
 
 ## Tone
@@ -51,10 +54,13 @@ The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha
   - Images: `https://showgo.uz/_next/image?url={urlencoded https://api.showgo.uz/storage/images/<path>}&w=640&q=75`. Never use the originals, which can be 5000px or more.
 - **Afisha.uz (RU)**: exhibitions (`/ru/exhibitions`), extra Navoi operas (venue schedule at `/ru/places/teatr-alishera-navoi`), small gigs (`/ru/concerts`) and cinema (`/ru/cinema`). Image is the article's og:image (`…_m.webp`).
 - **Ilkhom Theatre**: the full month is at `https://ilkhom.com/wp-admin/admin-ajax.php?action=wcs_get_events_json&start=YYYY-MM-DD&end=YYYY-MM-DD`. Times are labelled +00:00 but are actually local. Include only shows whose title contains "eng. subs" (English surtitles). Ilkhom concerts, such as IlkhomJazzClub, count as music.
-- **Cinematica English Movie Club** (Tashkent City Mall): the club's Instagram @englishmovieclubuz posts a monthly list of English-language titles with start dates. Each title then usually plays nightly at 20:30 for a week, in 2D with no subtitles.
-  - Cinematica's own API doesn't flag language. Use `https://cinematica.uz/api/v1/movies/soon` and `/movies/{id}` for posters (`file_poster`, horizontal) and release dates, and `/api/v1/repertory/movie/{id}/grouped` to see whether sessions are on sale. Add a film only once it has sessions (tickets rule).
-  - November 2026 lineup, held back on 31 Oct because no sessions were on sale yet: The Cat in the Hat (movie id 1049, from 5 Nov), Ebenezer: A Christmas Carol (from 12 Nov), The Hunger Games: Sunrise on the Reaping (id 1071, from 19 Nov). Add each when its sessions appear.
-  - If Instagram can't be read, keep the existing club cards and flag it in the summary.
+- **Cinematica English-language films** (Tashkent City Mall): Cinematica shows selected films in English. The titles and start dates are posted monthly on Instagram @englishmovieclubuz. Each title then usually plays nightly at 20:30 for a week, in 2D with no subtitles.
+  - List each as an ordinary film at Cinematica. Don't label it "English Movie Club" anywhere (title, badge or placeholder); use the "In English" badge.
+  - Use `opens="YYYY-MM-DD"` in build.py. The card shows "From [day]" and is listed until the opening day passes. Meta: "English-language screenings in 2D, no subtitles. Showtimes are published a few days before."
+  - Link to `https://cinematica.uz/movies/{id}` (the id from `https://cinematica.uz/api/v1/movies/soon`). If Cinematica hasn't listed the film yet, link to the Instagram account.
+  - Posters: `file_poster` (horizontal) from `/api/v1/movies/{id}`. Cinematica's API doesn't flag language.
+  - Price: the standard-hall range from current sessions (`/api/v1/repertory/movie/{id}/grouped`; ignore the VIP hall). On 31 Oct 2026 this was 35,000–70,000 UZS.
+  - If Instagram can't be read, keep the existing cards and flag it in the summary.
 - **kinoxona art cinema** (17 Chimkent St): films are shown in the original language with Russian subtitles. Include only English-language films, plus films with no dialogue. The programme appears about a week ahead on ShowGo (venue "Кинозал Чимкент, 17").
 - **CCA Tashkent**: `https://ccat.uz/en/programme/...`. Check the homepage for closure notices.
 - **Sport**: Pakhtakor, Uzbekistan national team, big tournaments in Tashkent. Use web search; iTicket's sport category has tickets once they're on sale.
@@ -72,7 +78,7 @@ All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and S
 ## Checks before publishing
 
 1. Every event URL returns 200. Fake slugs return 404 on iTicket, ShowGo and Afisha, so the check is meaningful.
-2. Every image loads, and none is a generic placeholder.
+2. Every image loads, and none is a generic placeholder. iTicket sometimes replaces an event's images, which makes the old URL return 403, so re-pull the image URLs from the detail API each run.
 3. Every listing obeys the audience rule, the 30-day window, the tickets rule and the tone rule.
 4. Every date and weekday is correct, with times in Tashkent time.
 

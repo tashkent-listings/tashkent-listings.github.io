@@ -80,6 +80,8 @@ def fmt_day(x):
 
 def when_text(item):
     """Build the date chip text."""
+    if "opens" in item:
+        return f"From {fmt_day(d(item['opens']))}"
     if "until" in item:
         u = d(item["until"])
         y = f" {u.year}" if u.year != 2026 else ""
@@ -109,6 +111,8 @@ def sort_key(item):
         return item["sort_override"]
     if "until" in item:
         return item["until"]
+    if "opens" in item:
+        return item["opens"]
     if "range" in item:
         return item["range"][0]
     if "dates" in item:
@@ -220,6 +224,8 @@ def in_window(it):
     it = dict(it)
     if "until" in it:  # exhibitions: listed while open
         return it if d(it["until"]) >= TODAY and d(it.get("from", RUN_DATE)) <= WINDOW_END else None
+    if "opens" in it:  # film runs: listed from a few days before they open until the opening day passes
+        return it if TODAY <= d(it["opens"]) <= WINDOW_END else None
     if "range" in it:
         a, b = d(it["range"][0]), d(it["range"][1])
         return it if b >= TODAY and a <= WINDOW_END else None
@@ -361,11 +367,7 @@ MUSIC = [
          u="https://iticket.uz/en/events/concerts/the-music-of-hans-zimmer-tynda-music",
          d="Film music by Hans Zimmer performed by a symphony orchestra and choir.",
          p="230,000–700,000 UZS", img=IT + "qEutxJne5Fk4pgjwiFAOL0C0oWsF2gW1a9DtH03s.jpg", f=["crossover"]),
-    dict(t="BURAK in BRAVO Orchestra", v="humo", dates=["2026-11-19"], time="19:30",
-         u="https://showgo.uz/en/session/1376-burak-in-bravo-orchestra",
-         d="Concert programme with Turkish actor Burak Özçivit and the Bravo Orchestra, based on music from Turkish television series.",
-         p="From 297,000 UZS", img=SG + "2026/10/cropped_20261022202350_lzvj_Bravo_Burak_19-30.jpg", pos="center 25%",
-         f=["crossover"]),
+
     dict(t="MICHAEL: Legendary Hits — Turkiston Chamber Orchestra", v="turkiston", dates=["2026-11-25"], time="19:00",
          u="https://iticket.uz/en/events/concerts/michael-legendarnye-hity",
          d="Orchestral arrangements of Michael Jackson songs, including Billie Jean, Bad, Smooth Criminal, Thriller and Black or White.",
@@ -390,7 +392,7 @@ MUSIC = [
     dict(t="Pagliacci (Leoncavallo)", v="navoi", dates=["2026-11-15"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/rleonkavallo-payacy-opera-9458",
          d="Leoncavallo's opera in two acts, set among a travelling theatre troupe.",
-         p="55,000–165,000 UZS", img=ITC + "BfhStzLOcWj2W4I6V19DK6EkKZiAfhVN07E9kGfq.jpg", f=["opera"]),
+         p="55,000–165,000 UZS", img=ITC + "QZtusilsj1kCteXDi7z6zD9ei4PUxNAnElwSbU7G.jpg", f=["opera"]),
     dict(t="Un ballo in maschera (Verdi)", v="navoi", dates=["2026-11-19"], time="19:00",
          u="https://www.afisha.uz/ru/concerts/2024/10/08/g-verdi", btn="Tickets (RU)",
          d="Verdi's opera, performed in two acts.",
@@ -408,84 +410,36 @@ MUSIC = [
          u="https://www.afisha.uz/ru/concerts/2026/10/13/jazzirama-11", btn="Tickets (RU)",
          d="Season opening of the IlkhomJazzClub. Tashkent band Jazzirama with guest vocalists including Mansur Tashmatov and maqom singer Nodira Pirmatova: jazz standards, ethno-jazz and improvisation.",
          p="240,000–290,000 UZS", img=AF + "2026/10/fc7f51f39f3074272c0646f5856e9796_m.webp", f=["jazz"]),
-    dict(t="Poshlaya Molly", v="yunusobod", dates=["2026-11-22"], time="20:00",
-         u="https://iticket.uz/en/events/concerts/poshlayamolly",
-         d="Ukrainian pop-punk band on its tenth-anniversary tour.",
-         p="825,000–1,650,000 UZS", img=IT + "OAgKq14AWD5kJyr1shLWcdwueeJ5aTeLfLsuRnka.jpg",
-         badges=[("18+", "")], f=["jazz"]),
+
     dict(t="KALEO", v="humo", dates=["2026-11-27"], time="19:00",
          u="https://showgo.uz/en/session/1165-kaleo-live-in-tashkent",
          d="Icelandic blues-rock band.",
          p="From 250,000 UZS", img=SG + "2026/09/cropped_20260907114146_lrqs_05261C4D-B221-4918-89BE-420BF156B13E.jpg",
          pos="center 30%", f=["jazz"]),
-    dict(t="WORKERS", v="sahna", dates=["2026-11-28"], time="19:00",
-         u="https://www.afisha.uz/ru/concerts/2026/10/26/workers", btn="Tickets (RU)",
-         d="Rap collective WORKERS presents a new album, with solo tracks from its seven members. Merchandise stall in the foyer before the concert.",
-         p="150,000 UZS", img=AF + "2026/10/e59c6d1e848203346d920d0dba5cd75b_m.webp", f=["jazz"]),
-    dict(t="Valery Meladze", v="palace", dates=["2026-11-01"], time="19:30",
-         u="https://iticket.uz/en/events/concerts/valerij-meladze2026",
-         d="Concert by singer Valery Meladze.",
-         p="250,000–3,300,000 UZS", img=IT + "Q8JnsjqzkRdONFlYiKGkJ4W1GhCOO4RmV1PeHUZr.jpg",
-         badges=[("Few seats left", "hot")], f=["intl"]),
+
+
     dict(t="Cheb Mami", v="humo", dates=["2026-11-07"], time="20:00",
          u="https://iticket.uz/en/events/concerts/cheb-mami",
          d="Algerian raï singer Cheb Mami in his first concert in Tashkent.",
-         p="150,000–2,000,000 UZS", img=IT + "jzp3aCFiqfPGykFUOudYAdj566hzkHzFCSiFyQHh.jpg", f=["intl"]),
-    dict(t="Vanya Dmitrienko", v="humo", dates=["2026-11-12"], time="19:00",
-         u="https://showgo.uz/en/session/1268-vania-dmitrienko-v-tashkente-2026",
-         d="Concert by Russian pop singer Vanya Dmitrienko.",
-         p="From 150,000 UZS", img=SG + "2026/10/cropped_20261017074440_zamf_IMG_6610.jpg", pos="center 25%",
-         f=["intl"]),
-    dict(t="Philipp Kirkorov", v="humo", dates=["2026-11-13"], time="19:00",
-         u="https://showgo.uz/en/session/1292-filipp-kirkorov-tashkent",
-         d="Concert by Russian pop singer Philipp Kirkorov.",
-         p="From 250,000 UZS", img=SG + "2026/10/cropped_20261015081939_emqf_photo_2026-10-15_13-19-23.jpg",
-         pos="center 25%", f=["intl"]),
-    dict(t="Autumn Story Festival", v="humo", dates=["2026-11-15"], time="19:00 (doors 15:00)",
-         u="https://iticket.uz/en/events/concerts/festival-osennyaya-istoriya",
-         d="Multi-artist pop festival. A welcome area opens at 15:00; the concert starts at 19:00.",
-         p="250,000–1,166,000 UZS", img=IT + "B29ceRwVlBisFYkq7B442Hp5MTebneldrxPSNK0x.jpg", f=["intl"]),
-    dict(t="Abzal Uteshov", v="turkiston", dates=["2026-11-27"], time="19:00",
-         u="https://showgo.uz/en/session/1350-abzal-uteshov-v-tashkente-2026",
-         d="Concert by Kazakh pop singer Abzal Uteshov.",
-         p="From 250,000 UZS", img=SG + "2026/10/cropped_20261017111553_pusj_jpg.jpg", pos="center 25%",
-         f=["intl"]),
-    dict(t="Mariana Lokel — NANO Tour", v="panorama", dates=["2026-11-28"], time="18:00",
-         u="https://showgo.uz/en/session/1335-mariana-lokel-nano-tur-osen-2026-v-tashkente",
-         d="Concert by singer Mariana Lokel as part of her autumn tour.",
-         p="From 450,000 UZS", img=SG + "2026/09/cropped_20260929160453_dtby_jpg.jpg", pos="center 25%",
-         f=["intl"]),
-    dict(t="Shoxrux — Katta Show", v="humo", dates=["2026-11-01"], time="18:00",
-         u="https://iticket.uz/en/events/concerts/shoxrux2026",
-         d="Concert by Uzbek rapper Shoxrux, with earlier tracks and new material.",
-         p="180,000–950,000 UZS", img=IT + "JPCAuH4HvrI7JW9IY7aMtjtcwa5xKQuM5sU9IhwW.jpg", f=["uzbek"]),
-    dict(t="Otabek Madrahimov — 35 years on stage", v="palace", range=["2026-11-02", "2026-11-05"], time="19:30",
-         u="https://iticket.uz/en/events/concerts/otabek-madrahimov",
-         d="Four concerts marking singer Otabek Madrahimov's 35 years on stage.",
-         p="50,000–600,000 UZS", img=IT + "AOR1Z5yi2QfkpbJti3JRQQpaITdE3FliwRXDsu5y.jpg", f=["uzbek"]),
-    dict(t="Ulug'bek Rahmatullayev — 25 years", v="palace", range=["2026-11-08", "2026-11-14"], time="19:30",
-         u="https://iticket.uz/en/events/concerts/ulugbek-rahmatullayev-2026",
-         d="Seven concerts marking 25 years of Ulug'bek Rahmatullayev's career.",
-         p="80,000–500,000 UZS", img=IT + "wey2CaJpCLnjH9CPnm7CUYFzbRxg6SI87PXcKel8.jpg", f=["uzbek"]),
-    dict(t="G'aybulla Tursunov — Quralay", v="humo", dates=["2026-11-20"], time="19:00",
-         u="https://iticket.uz/en/events/concerts/gaybulla-tursunov2026",
-         d="Concert programme 'Quralay' by singer G'aybulla Tursunov, his first at Humo Arena.",
-         p="60,000–550,000 UZS", img=IT + "12InDgpy2OBZEG5C11LqJJrFQdFIcT0wwSVzov8q.jpg", f=["uzbek"]),
-    dict(t="SAHAR — AYOL", v="humo", dates=["2026-11-21"], time="19:00",
-         u="https://www.afisha.uz/ru/concerts/2026/09/30/sahar", btn="Tickets (RU)",
-         d="The band SAHAR presents its concert programme AYOL. 6+.",
-         p="150,000–450,000 UZS", img=AF + "2026/10/0bc7078e39b6c651ba9bc06637caf6dd_m.webp", f=["uzbek"]),
-    dict(t="Yulduzlar Oqshomi", v="panorama", dates=["2026-11-21"], time="19:00",
-         u="https://iticket.uz/en/events/concerts/yulduzlar-oqshomi",
-         d="Gala concert with several Uzbek pop singers.",
-         p="200,000–300,000 UZS", img=IT + "sVyYMowuK6gT7jCX88O5utO3pSAGhxTzHhDeHFIV.jpg", f=["uzbek"]),
-    dict(t="Benom — The Best (Yangi)", v="palace", range=["2026-11-27", "2026-11-30"], time="19:30",
-         u="https://iticket.uz/en/events/concerts/benom-guruhi-the-best-yangi",
-         d="Concerts by Uzbek pop group Benom, with an additional performance on 28 Nov at 15:00.",
-         p="70,000–500,000 UZS", img=IT + "VsfkeoRtJekGpHkToQhYnFZBXpA85F4dLg7WDN7O.jpg", f=["uzbek"]),
+         p="150,000–2,000,000 UZS", img=IT + "jzp3aCFiqfPGykFUOudYAdj566hzkHzFCSiFyQHh.jpg", f=["jazz"]),
+
+
+
+
+
+
+
+
+
+
+
+
 ]
 
 # ---------------------------------------------------------------- THEATRE & FILM
+CM = "https://cinematica.uz/uploads/movies/"
+CM_META = "English-language screenings in 2D, no subtitles. Showtimes are published a few days before."
+CM_PRICE = "35,000–70,000 UZS (standard halls)"
 THEATRE = [
     dict(t="White, White Black Stork", v="ilkhom", dates=["2026-11-04"], time="19:00",
          u="https://ilkhom.com/events/belyj-belyj-chyornyj-aist-eng-subs/", btn="Details & tickets",
@@ -522,6 +476,24 @@ THEATRE = [
          meta="Original English audio with Russian subtitles.",
          p="90,000 UZS", img=SG + "2026/10/cropped_20261028082900_hqkq_4.jpg", pos="center 30%", ph="kinoxona",
          badges=[("In English", "eng"), ("Few seats left", "hot")], f=["film"]),
+    dict(t="The Cat in the Hat", v="cinematica", opens="2026-11-05",
+         u="https://cinematica.uz/movies/1049", btn="Details",
+         d="Animated Dr. Seuss adaptation in which the Cat, voiced by Bill Hader, visits two siblings stuck indoors on a rainy day.",
+         meta=CM_META,
+         p=CM_PRICE, img=CM + "cdcf983f-9269-4574-9959-eb49aa4688bc.png", ph="Cinematica",
+         badges=[("In English", "eng"), ("Family", "")], f=["film", "family"]),
+    dict(t="Ebenezer: A Christmas Carol", v="cinematica", opens="2026-11-12",
+         u="https://www.instagram.com/englishmovieclubuz/", btn="Details",
+         d="Adaptation of Dickens's A Christmas Carol, with Johnny Depp as Ebenezer Scrooge.",
+         meta=CM_META,
+         p=CM_PRICE, img=None, ph="Cinematica",
+         badges=[("In English", "eng")], f=["film"]),
+    dict(t="The Hunger Games: Sunrise on the Reaping", v="cinematica", opens="2026-11-19",
+         u="https://cinematica.uz/movies/1071", btn="Details",
+         d="Prequel set 24 years before the original trilogy, in which a young Haymitch Abernathy competes in the 50th Hunger Games. Directed by Francis Lawrence; cast includes Ralph Fiennes, Elle Fanning and Glenn Close. 12+.",
+         meta=CM_META,
+         p=CM_PRICE, img=CM + "63dfd810-9da2-4ff0-94b6-6b8fd3aa03d8.png", ph="Cinematica",
+         badges=[("In English", "eng")], f=["film"]),
 ]
 
 # ---------------------------------------------------------------- DANCE
@@ -553,7 +525,7 @@ SPORT = [
 PAGES = [
     ("art", "Art", "Exhibition", [("free", "Free entry"), ("closing", "Closing in the next 30 days"), ("long", "Running longer")], ART),
     ("music", "Music", "Music", [("classical", "Classical & organ"), ("opera", "Opera"), ("crossover", "Film & crossover"),
-                                 ("jazz", "Jazz, rock & rap"), ("intl", "International pop"), ("uzbek", "Uzbek pop & estrada")], MUSIC),
+                                 ("jazz", "Jazz, rock & world")], MUSIC),
     ("theatre", "Theatre & Film", "Theatre", [("stage", "Stage"), ("film", "Film"), ("family", "Family")], THEATRE),
     ("dance", "Dance", "Ballet", [("ballet", "Ballet"), ("family", "Family")], DANCE),
     ("sport", "Sport", "Sport", [("football", "Football")], SPORT),
