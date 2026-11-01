@@ -534,22 +534,14 @@ PAGES = [
 
 # ---------------------------------------------------------------- CALENDAR (day by day, all categories)
 CAL_CSS = """
-.tel-ongoing{background:#f8fafc;border:1px solid var(--tel-line);border-radius:10px;padding:12px 16px;margin:0 0 20px}
-.tel-ongoing h3,.tel-day h3{font-size:1rem;color:var(--tel-navy);margin:0 0 8px}
-.tel-ongoing summary{cursor:pointer;list-style:none}
-.tel-ongoing summary::-webkit-details-marker{display:none}
-.tel-ongoing summary h3{display:inline;margin:0}
-.tel-ongoing summary:after{content:" \\25BE";color:var(--tel-navy)}
-.tel-ongoing[open] summary{margin-bottom:8px}
-.tel-ongoing[open] summary:after{content:" \\25B4"}
 .tel-day{margin:0 0 18px}
+.tel-day h3{font-size:1rem;color:var(--tel-navy);margin:0 0 8px}
 .tel-day h3{padding:0 0 6px;border-bottom:2px solid var(--tel-line)}
 .tel-day h3 .tel-today{display:none;margin-left:8px;background:var(--tel-gold);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:999px;vertical-align:middle}
 .tel-day.is-today h3 .tel-today{display:inline-block}
 .tel-row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--tel-line)}
 .tel-row:last-child{border-bottom:0}
-.tel-row[hidden],.tel-day[hidden],.tel-ongoing[hidden]{display:none}
-.tel-time{font-size:.85rem;font-weight:700;color:var(--tel-navy);padding-top:1px}
+.tel-row[hidden],.tel-day[hidden],.tel-time{font-size:.85rem;font-weight:700;color:var(--tel-navy);padding-top:1px}
 .tel-row .tel-title{font-size:.95rem;margin:0 0 3px}
 .tel-row .tel-badge{display:inline-block;margin-left:6px;vertical-align:1px;box-shadow:none;background:var(--tel-chip)}
 .tel-row .tel-badge.eng{background:#1d4ed8;color:#fff}
@@ -568,14 +560,12 @@ CAL_CSS = """
 CAL_JS = """(function(){var r=document.getElementById('tel-calendar');if(!r)return;
 var now=new Date(Date.now()+5*36e5).toISOString().slice(0,10);
 var days=r.querySelectorAll('.tel-day');for(var i=0;i<days.length;i++){var dd=days[i].getAttribute('data-day');if(dd<now){days[i].remove();}else if(dd===now){days[i].classList.add('is-today');}}
-var og=r.querySelectorAll('.tel-ongoing .tel-row');for(var i=0;i<og.length;i++){if(og[i].getAttribute('data-until')<now)og[i].remove();}
-var tabs=r.querySelectorAll('.tel-tab');
+var og=r.querySelectorAll('var tabs=r.querySelectorAll('.tel-tab');
 function apply(t){var rows=r.querySelectorAll('.tel-row');for(var k=0;k<rows.length;k++){rows[k].hidden=!(t==='all'||rows[k].getAttribute('data-f')===t);}
-var groups=r.querySelectorAll('.tel-day,.tel-ongoing');for(var g=0;g<groups.length;g++){groups[g].hidden=!groups[g].querySelector('.tel-row:not([hidden])');}}
-for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');tabs[j].setAttribute('aria-selected','false');}this.classList.add('on');this.setAttribute('aria-selected','true');apply(this.getAttribute('data-f'));});}
+var groups=r.querySelectorAll('.tel-day,for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');tabs[j].setAttribute('aria-selected','false');}this.classList.add('on');this.setAttribute('aria-selected','true');apply(this.getAttribute('data-f'));});}
 apply('all');})();"""
 
-SHORT_RUN_DAYS = 7   # ranges up to a week are shown on each day; longer runs go in "On throughout the period"
+SHORT_RUN_DAYS = 7   # ranges under a week are shown on each day; longer runs are left off the calendar
 
 
 def cal_row(cat, catname, it, time_txt, extra=""):
@@ -596,38 +586,27 @@ def cal_row(cat, catname, it, time_txt, extra=""):
 
 
 def build_calendar():
-    days, ongoing = {}, []
+    days = {}
     for cat, catname, _label, _tabs, items in PAGES:
         for it in filter(None, (in_window(i) for i in items)):
-            if "until" in it:
-                ongoing.append((it["until"], cat, catname, it))
-            elif "opens" in it:
-                days.setdefault(it["opens"], []).append(("00:00", cat, catname, it, "Opens"))
+            if "until" in it or "opens" in it:
+                continue   # exhibitions and Cinematica film runs stay on their own pages only
             elif "range" in it:
                 a, b = d(it["range"][0]), d(it["range"][1])
-                if (b - a).days < SHORT_RUN_DAYS:
-                    x = max(a, TODAY)
-                    while x <= min(b, WINDOW_END):
-                        days.setdefault(x.isoformat(), []).append((it.get("time", "99"), cat, catname, it, it.get("time", "")))
-                        x += dt.timedelta(days=1)
-                else:
-                    ongoing.append((it["range"][1], cat, catname, it))
+                if (b - a).days >= SHORT_RUN_DAYS:
+                    continue   # long runs (e.g. the circus) stay on their own page only
+                x = max(a, TODAY)
+                while x <= min(b, WINDOW_END):
+                    days.setdefault(x.isoformat(), []).append((it.get("time", "99"), cat, catname, it, it.get("time", "")))
+                    x += dt.timedelta(days=1)
             else:
                 for x in it["dates"]:
                     days.setdefault(x, []).append((it.get("time", "99"), cat, catname, it, it.get("time", "")))
-    present = {cat for v in days.values() for _, cat, *_ in v} | {cat for _, cat, _, _ in ongoing}
+    present = {cat for v in days.values() for _, cat, *_ in v}
     tab_html = '<button class="tel-tab on" data-f="all" role="tab" aria-selected="true">All</button>'
     for cat, catname, *_ in PAGES:
         if cat in present:
             tab_html += f'<button class="tel-tab" data-f="{cat}" role="tab" aria-selected="false">{esc(catname)}</button>'
-    og_html = ""
-    if ongoing:
-        rows = "".join(
-            cal_row(cat, catname, it, "", f' data-until="{until}"').replace(
-                '<div class="tel-time"></div>', f'<div class="tel-time">Until {d(until).day} {d(until).strftime("%b")}</div>')
-            for until, cat, catname, it in sorted(ongoing, key=lambda o: o[0]))
-        og_html = (f'<details class="tel-ongoing"><summary><h3>Exhibitions and longer runs ({len(ongoing)})</h3></summary>'
-                   f'{rows}</details>')
     day_html = ""
     for day in sorted(days):
         x = d(day)
@@ -644,14 +623,13 @@ def build_calendar():
 <div class="tel" id="tel-calendar">
 <div class="tel-head"><h2>{esc(title)}</h2></div>
 <div class="tel-tabs" role="tablist">{tab_html}</div>
-{og_html}
 {day_html}
 </div>
 <script>{CAL_JS}</script>
 """
     with open(os.path.join(OUT, "calendar.html"), "w", encoding="utf-8") as fh:
         fh.write(snippet)
-    return sum(len(v) for v in days.values()), len(ongoing)
+    return sum(len(v) for v in days.values())
 
 
 def main():
@@ -659,7 +637,7 @@ def main():
     for key, name, label, tabs, items in PAGES:
         out[key] = build(key, name, label, tabs, items)
         print(key, len(out[key][2]))
-    print("calendar (day entries, ongoing)", build_calendar())
+    print("calendar (day entries)", build_calendar())
     manifest = [{"cat": k, "t": it["t"], "u": it["u"], "img": it.get("img")} for k, (_, _, items) in out.items() for it in items]
     with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=1)

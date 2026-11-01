@@ -73,7 +73,7 @@ All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and S
 - Write descriptions in plain English, in your own words, and don't copy source text.
 - Badges: "In English", "English surtitles", "No dialogue", "Visual show", "Free", "Few seats left" (under about 60 tickets left), "Closes …", "New production".
 - Set `RUN_DATE` to the run date.
-- The calendar page is generated from the same five lists; it needs no data of its own. Single dates and runs of under a week appear on each day; exhibitions and longer runs (such as the circus) go in a fold-out section at the top. Cinematica films appear on their opening day as "Opens". The page hides days that have passed, so it stays correct between refreshes.
+- The calendar page is generated from the same five lists; it needs no data of its own. It shows dated events only: single dates and runs of under a week appear on each day. Exhibitions, longer runs (such as the circus) and Cinematica film runs are left off the calendar on purpose and stay on their own pages. The page hides days that have passed, so it stays correct between refreshes.
 - `python3 tools/build.py live` writes the pages to the repo root, which is what the site shows.
 - `python3 tools/build.py preview` writes them to `/preview/` for review.
 
