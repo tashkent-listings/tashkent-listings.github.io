@@ -532,11 +532,134 @@ PAGES = [
 ]
 
 
+# ---------------------------------------------------------------- CALENDAR (day by day, all categories)
+CAL_CSS = """
+.tel-ongoing{background:#f8fafc;border:1px solid var(--tel-line);border-radius:10px;padding:12px 16px;margin:0 0 20px}
+.tel-ongoing h3,.tel-day h3{font-size:1rem;color:var(--tel-navy);margin:0 0 8px}
+.tel-ongoing summary{cursor:pointer;list-style:none}
+.tel-ongoing summary::-webkit-details-marker{display:none}
+.tel-ongoing summary h3{display:inline;margin:0}
+.tel-ongoing summary:after{content:" \\25BE";color:var(--tel-navy)}
+.tel-ongoing[open] summary{margin-bottom:8px}
+.tel-ongoing[open] summary:after{content:" \\25B4"}
+.tel-day{margin:0 0 18px}
+.tel-day h3{padding:0 0 6px;border-bottom:2px solid var(--tel-line)}
+.tel-day h3 .tel-today{display:none;margin-left:8px;background:var(--tel-gold);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:999px;vertical-align:middle}
+.tel-day.is-today h3 .tel-today{display:inline-block}
+.tel-row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--tel-line)}
+.tel-row:last-child{border-bottom:0}
+.tel-row[hidden],.tel-day[hidden],.tel-ongoing[hidden]{display:none}
+.tel-time{font-size:.85rem;font-weight:700;color:var(--tel-navy);padding-top:1px}
+.tel-row .tel-title{font-size:.95rem;margin:0 0 3px}
+.tel-row .tel-badge{display:inline-block;margin-left:6px;vertical-align:1px;box-shadow:none;background:var(--tel-chip)}
+.tel-row .tel-badge.eng{background:#1d4ed8;color:#fff}
+.tel-row .tel-badge.free{background:#15803d;color:#fff}
+.tel-row .tel-badge.hot{background:#b91c1c;color:#fff}
+.tel-row .tel-badge.new{background:var(--tel-gold);color:#fff}
+.tel-line2{font-size:.8rem;color:var(--tel-muted);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+.tel-line2 a{color:var(--tel-gold);text-decoration:none;font-weight:600}
+.tel-line2 a:hover{text-decoration:underline}
+.tel-cat{font-weight:700;color:var(--tel-ink)}
+.tel-cat:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--c,#94a3b8)}
+.tel-cat.art{--c:#7c3aed}.tel-cat.music{--c:#1d4ed8}.tel-cat.theatre{--c:#b91c1c}.tel-cat.dance{--c:#db2777}.tel-cat.sport{--c:#15803d}
+""".strip()
+
+# Hides days that have passed (Tashkent time) and handles the category tabs.
+CAL_JS = """(function(){var r=document.getElementById('tel-calendar');if(!r)return;
+var now=new Date(Date.now()+5*36e5).toISOString().slice(0,10);
+var days=r.querySelectorAll('.tel-day');for(var i=0;i<days.length;i++){var dd=days[i].getAttribute('data-day');if(dd<now){days[i].remove();}else if(dd===now){days[i].classList.add('is-today');}}
+var og=r.querySelectorAll('.tel-ongoing .tel-row');for(var i=0;i<og.length;i++){if(og[i].getAttribute('data-until')<now)og[i].remove();}
+var tabs=r.querySelectorAll('.tel-tab');
+function apply(t){var rows=r.querySelectorAll('.tel-row');for(var k=0;k<rows.length;k++){rows[k].hidden=!(t==='all'||rows[k].getAttribute('data-f')===t);}
+var groups=r.querySelectorAll('.tel-day,.tel-ongoing');for(var g=0;g<groups.length;g++){groups[g].hidden=!groups[g].querySelector('.tel-row:not([hidden])');}}
+for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');tabs[j].setAttribute('aria-selected','false');}this.classList.add('on');this.setAttribute('aria-selected','true');apply(this.getAttribute('data-f'));});}
+apply('all');})();"""
+
+SHORT_RUN_DAYS = 7   # ranges up to a week are shown on each day; longer runs go in "On throughout the period"
+
+
+def cal_row(cat, catname, it, time_txt, extra=""):
+    badges = "".join(
+        f'<span class="tel-badge {cls}">{esc(txt)}</span>'
+        for txt, cls in it.get("badges", [])
+        if not txt.startswith("Closes") and not txt.endswith("performances")
+    )
+    vname = V[it["v"]][0] if it["v"] in V else it["v"]
+    vlabel = it.get("vlabel", vname)
+    m = maps(it["v"]) if it["v"] in V else None
+    venue = (f'<a href="{esc(m)}" target="_blank" rel="noopener" title="Open in Google Maps">📍 {esc(vlabel)}</a>'
+             if m else f"<span>📍 {esc(vlabel)}</span>")
+    return (f'<div class="tel-row" data-f="{cat}"{extra}><div class="tel-time">{esc(time_txt)}</div><div>'
+            f'<h4 class="tel-title"><a href="{esc(it["u"])}" target="_blank" rel="noopener">{esc(it["t"])}</a>{badges}</h4>'
+            f'<div class="tel-line2"><span class="tel-cat {cat}">{esc(catname)}</span>{venue}<span>{esc(it["p"])}</span></div>'
+            f'</div></div>')
+
+
+def build_calendar():
+    days, ongoing = {}, []
+    for cat, catname, _label, _tabs, items in PAGES:
+        for it in filter(None, (in_window(i) for i in items)):
+            if "until" in it:
+                ongoing.append((it["until"], cat, catname, it))
+            elif "opens" in it:
+                days.setdefault(it["opens"], []).append(("00:00", cat, catname, it, "Opens"))
+            elif "range" in it:
+                a, b = d(it["range"][0]), d(it["range"][1])
+                if (b - a).days < SHORT_RUN_DAYS:
+                    x = max(a, TODAY)
+                    while x <= min(b, WINDOW_END):
+                        days.setdefault(x.isoformat(), []).append((it.get("time", "99"), cat, catname, it, it.get("time", "")))
+                        x += dt.timedelta(days=1)
+                else:
+                    ongoing.append((it["range"][1], cat, catname, it))
+            else:
+                for x in it["dates"]:
+                    days.setdefault(x, []).append((it.get("time", "99"), cat, catname, it, it.get("time", "")))
+    present = {cat for v in days.values() for _, cat, *_ in v} | {cat for _, cat, _, _ in ongoing}
+    tab_html = '<button class="tel-tab on" data-f="all" role="tab" aria-selected="true">All</button>'
+    for cat, catname, *_ in PAGES:
+        if cat in present:
+            tab_html += f'<button class="tel-tab" data-f="{cat}" role="tab" aria-selected="false">{esc(catname)}</button>'
+    og_html = ""
+    if ongoing:
+        rows = "".join(
+            cal_row(cat, catname, it, "", f' data-until="{until}"').replace(
+                '<div class="tel-time"></div>', f'<div class="tel-time">Until {d(until).day} {d(until).strftime("%b")}</div>')
+            for until, cat, catname, it in sorted(ongoing, key=lambda o: o[0]))
+        og_html = (f'<details class="tel-ongoing"><summary><h3>Exhibitions and longer runs ({len(ongoing)})</h3></summary>'
+                   f'{rows}</details>')
+    day_html = ""
+    for day in sorted(days):
+        x = d(day)
+        rows = "".join(cal_row(cat, catname, it, tt)
+                       for _, cat, catname, it, tt in sorted(days[day], key=lambda e: (e[0], e[3]["t"])))
+        day_html += (f'<section class="tel-day" data-day="{day}"><h3>{x.strftime("%A")} {x.day} {x.strftime("%B")}'
+                     f'<span class="tel-today">Today</span></h3>{rows}</section>')
+    title = f"Calendar · {title_range()}"
+    snippet = f"""<!-- Tashkent Expat Listings · Calendar · updated {RUN_DATE} -->
+<style>
+{CSS}
+{CAL_CSS}
+</style>
+<div class="tel" id="tel-calendar">
+<div class="tel-head"><h2>{esc(title)}</h2></div>
+<div class="tel-tabs" role="tablist">{tab_html}</div>
+{og_html}
+{day_html}
+</div>
+<script>{CAL_JS}</script>
+"""
+    with open(os.path.join(OUT, "calendar.html"), "w", encoding="utf-8") as fh:
+        fh.write(snippet)
+    return sum(len(v) for v in days.values()), len(ongoing)
+
+
 def main():
     out = {}
     for key, name, label, tabs, items in PAGES:
         out[key] = build(key, name, label, tabs, items)
         print(key, len(out[key][2]))
+    print("calendar (day entries, ongoing)", build_calendar())
     manifest = [{"cat": k, "t": it["t"], "u": it["u"], "img": it.get("img")} for k, (_, _, items) in out.items() for it in items]
     with open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=1)
@@ -549,7 +672,7 @@ def build_site(dest="live"):
     root = os.path.dirname(HERE)
     site = root if dest == "live" else os.path.join(root, "preview")
     os.makedirs(site, exist_ok=True)
-    for key, name, *_ in PAGES:
+    for key, name in [("calendar", "Calendar")] + [(p[0], p[1]) for p in PAGES]:
         snip = open(os.path.join(OUT, f"{key}.html"), encoding="utf-8").read()
         page = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -561,7 +684,7 @@ def build_site(dest="live"):
 """
         with open(os.path.join(site, f"{key}.html"), "w", encoding="utf-8") as fh:
             fh.write(page)
-    links = "".join(f'<li><a href="{k}.html">{n}</a></li>' for k, n, *_ in PAGES)
+    links = '<li><a href="calendar.html">Calendar</a></li>' + "".join(f'<li><a href="{k}.html">{n}</a></li>' for k, n, *_ in PAGES)
     with open(os.path.join(site, "index.html"), "w", encoding="utf-8") as fh:
         fh.write(f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tashkent Expat Listings</title><style>body{{font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1f2937}}h1{{color:#1e3a5f}}a{{color:#1e3a5f}}</style></head>

@@ -7,6 +7,7 @@ Owner: Louis Train (GitHub account `tashkent-listings`). The site is Google Site
 - https://tashkent-listings.github.io/theatre.html (Theatre & Film)
 - https://tashkent-listings.github.io/dance.html
 - https://tashkent-listings.github.io/sport.html
+- https://tashkent-listings.github.io/calendar.html (all five categories, day by day)
 
 ## The audience rule (most important)
 
@@ -72,6 +73,7 @@ All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and S
 - Write descriptions in plain English, in your own words, and don't copy source text.
 - Badges: "In English", "English surtitles", "No dialogue", "Visual show", "Free", "Few seats left" (under about 60 tickets left), "Closes …", "New production".
 - Set `RUN_DATE` to the run date.
+- The calendar page is generated from the same five lists; it needs no data of its own. Single dates and runs of under a week appear on each day; exhibitions and longer runs (such as the circus) go in a fold-out section at the top. Cinematica films appear on their opening day as "Opens". The page hides days that have passed, so it stays correct between refreshes.
 - `python3 tools/build.py live` writes the pages to the repo root, which is what the site shows.
 - `python3 tools/build.py preview` writes them to `/preview/` for review.
 
@@ -86,7 +88,7 @@ All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and S
 
 - **Review period (until 30 Nov 2026):** build to `/preview/`, commit and push, then message Louis with:
   - a short summary of what was added, removed or changed;
-  - the preview URLs (`https://tashkent-listings.github.io/preview/music.html` etc.).
+  - the preview URLs (`https://tashkent-listings.github.io/preview/music.html` etc., including `preview/calendar.html`).
 
   Wait for him to reply "publish". Then rebuild with `live`, commit and push.
 - **From 1 Dec 2026:** build straight to `live`, commit and push, and send Louis the summary afterwards.
