@@ -13,7 +13,7 @@ import urllib.parse
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out")
 os.makedirs(OUT, exist_ok=True)
-RUN_DATE = "2026-10-31"   # set to the date of each refresh
+RUN_DATE = "2026-11-02"   # set to the date of each refresh
 WINDOW_DAYS = 30
 TODAY = dt.date.fromisoformat(RUN_DATE)
 WINDOW_END = TODAY + dt.timedelta(days=WINDOW_DAYS)
@@ -59,6 +59,9 @@ V = {
     "sahna": ("Sahna Stand-Up Club", "17 Matbuotchilar Street, Tashkent"),
     "circus": ("State Circus of Uzbekistan", "Tashkent State Circus"),
     "cinematica": ("Cinematica, Tashkent City Mall (4th floor)", "41.3165,69.254"),
+    "azimut": ("AZIMUT Grand Hotel Tashkent", "AZIMUT Grand Hotel Tashkent, 107A Amir Temur Avenue"),
+    "artikul": ("Studio Artikul 32", "Artikul 32, 34 Bogibuston Street, Tashkent"),
+    "ichkari": ("ICHKARI museum", "41.2884310,69.2419630"),
     "tbc": ("Tashkent (venue TBC)", None),
 }
 
@@ -337,8 +340,21 @@ ART = [
     dict(t="Savitsky's Diaries: Old and New", v="tcm", until="2027-01-24",
          u="https://iticket.uz/en/events/cultural-events/savitskys-diaries-old-and-new-2027",
          d="Multimedia exhibition combining painting, music, light and movement, about Igor Savitsky, founder of the Karakalpakstan State Museum of Art in Nukus. Organised by ACDF; curated by Aziza Izamova.",
-         p="40,000–60,000 UZS", img=IT + "k2wro6npuQ0dyr2ezSgCQSu9UdFc3rToBaLdHDga.jpg",
+         meta="Mon–Thu 10:00–23:00, Fri–Sun 10:00–00:00. 40,000 UZS Mon–Wed, 60,000 UZS Fri–Sun; free on Thursdays (no booking, first come first served). Children under 10 free.",
+         p="40,000–60,000 UZS (free on Thursdays)", img=IT + "k2wro6npuQ0dyr2ezSgCQSu9UdFc3rToBaLdHDga.jpg",
          badges=[("Multimedia", "")], f=["long"]),
+    dict(t="Art Bazaar", v="azimut", dates=["2026-11-08"], time="10:00",
+         u="https://www.afisha.uz/ru/exhibitions/2026/10/29/art-bazaar", btn="Details (RU)",
+         d="One-day fair of handmade work by craftspeople from across Uzbekistan: ceramics, suzani embroidery, jewellery, clothing, textiles and objects for the home. Works can be bought directly from the makers.",
+         meta="Open 10:00–18:00.",
+         p="Free", img=AF + "2026/10/167b931e3a69a22e555fc7d75fdb0c4f_m.webp",
+         badges=[("Free", "free"), ("One day", "")], f=["free"]),
+    dict(t="Keramistan", v="artikul", dates=["2026-11-28"], time="11:00",
+         u="https://www.afisha.uz/ru/exhibitions/2026/10/19/keramistan", btn="Details (RU)",
+         d="Ceramics expo-market: 14 studios and makers show work made around this edition's theme, the labyrinth. All pieces are for sale.",
+         meta="Open 11:00–20:00.",
+         p="Free", img=AF + "2026/10/22330fbcdc047af2aec8c9c6dfd9375e_m.webp",
+         badges=[("Free", "free"), ("One day", "")], f=["free"]),
     dict(t="Hikmah", v="cca", until="2027-01-31",
          u="https://ccat.uz/en/programme/hikmah-exhibition", btn="Details",
          d="Opening exhibition of the Centre for Contemporary Arts Tashkent: new commissions and recent works by Uzbek and international artists on wisdom, spirit and the transformation of matter. The centre occupies a restored 1912 diesel power station.",
@@ -349,91 +365,90 @@ ART = [
 
 # ---------------------------------------------------------------- MUSIC
 MUSIC = [
-    dict(t="Mozart & Chopin — Young Talents Chamber Orchestra", v="cons", dates=["2026-11-13"], time="19:00",
+    dict(t="Mozart & Chopin — Young Talents Chamber Orchestra", v="cons", vlabel="State Conservatory (Organ Hall)",
+         dates=["2026-11-13"], time="19:00",
          u="https://iticket.uz/en/events/concerts/mozart-and-chopin-young-talents-chamber-orchestra",
-         d="Works by Mozart and Chopin performed by the Young Talents Chamber Orchestra.",
-         p="66,000–165,000 UZS", img=IT + "qwRxxi3d2cOs5NFvnwI8kHcNBz8DmCNj1dDr89CM.jpg", f=["classical"]),
+         d="Young Talents Chamber Orchestra, conductor Kirill Chakhlov, with young soloists. Mozart: Eine kleine Nachtmusik and Symphony No. 25. Chopin: waltzes, Nocturne No. 21, Polonaise No. 1 and Scherzo No. 2. 6+.",
+         p="66,000–165,000 UZS", img=IT + "qwRxxi3d2cOs5NFvnwI8kHcNBz8DmCNj1dDr89CM.jpg",
+         badges=[("Few seats left", "hot")], f=["classical"]),
+    dict(t="Chopin & Dvořák — State Symphony Orchestra", v="cons", dates=["2026-11-14"], time="19:00",
+         u="https://www.afisha.uz/ru/concerts/2026/10/16/classic", btn="Details (RU)",
+         d="State Symphony Orchestra of Uzbekistan, conductor Kamoliddin Urinbaev. Chopin, Piano Concerto No. 1 (soloist Madina Fayzieva); Dvořák, Symphony No. 9 'From the New World'.",
+         p="55,000–150,000 UZS", img=AF + "2026/10/e44592d4e49dffb21bd049e9b3ffeab9_m.webp", f=["classical"]),
     dict(t="From the New World — National Symphony Orchestra", v="turkiston", dates=["2026-11-23"], time="19:00",
          u="https://iticket.uz/en/events/concerts/iz-novogo-sveta",
          d="Conductor Boburjon Kurbonaliev. Rachmaninoff, The Rock; Haydn, Cello Concerto (soloist Sardor Ibragimov); Dvořák, Symphony No. 9.",
          p="77,000–132,000 UZS", img=IT + "chuD6MvHrRwBn3GszCWdLv47l3VSpqAUKU9OZx6q.jpg", f=["classical"]),
-    dict(t="An Evening of Organ Music — Soloists of Uzbekistan", v="cons", vlabel="State Conservatory (Organ Hall)",
-         dates=["2026-11-27"], time="19:00",
-         u="https://iticket.uz/en/events/concerts/vecher-organnoj-muzyki-solisty-uzbekistana",
-         d="Soloists of Uzbekistan chamber orchestra, conductor Anvar Raimdzhanov, with organist Adelina Fatkhutdinova. Bach, Albinoni, Rheinberger (Organ Concerto in G minor), Respighi and Jenkins.",
-         p="88,000–385,000 UZS", img=IT + "FLgbVLSlOu8sxvtCkQ3toUbsdqsPguvOzqqiUqb8.jpg",
-         badges=[("Few seats left", "hot")], f=["classical"]),
+    dict(t="Palette of the 20th Century — chamber music", v="cons", dates=["2026-11-26"], time="19:00",
+         u="https://www.afisha.uz/ru/concerts/2026/10/30/palette", btn="Details (RU)",
+         d="Chamber concert by soloists and teaching staff of the Conservatory: works by Shostakovich, Shchedrin, Schoenberg, Bloch, Zwaag, Bozza, Cage, Ireland and Piazzolla.",
+         p="60,000 UZS", img=AF + "2026/10/9a184e4d9ad95136c62dfe4cb1867201_m.webp", f=["classical"]),
+    dict(t="Time of Classics — National Symphony Orchestra", v="turkiston", dates=["2026-12-02"], time="19:00",
+         u="https://iticket.uz/en/events/concerts/vremya-klassiki",
+         d="Conductor Boburjon Kurbonaliev. Sibelius, Valse triste and Symphony No. 2; Prokofiev, Piano Concerto No. 1 (soloist Nikita Stetsenko). 12+.",
+         p="77,000–132,000 UZS", img=IT + "fdj6PYkx5XAipPqfKmSaUnJiOAUHgejbv0SxAyAz.jpg", f=["classical"]),
     dict(t="The Music of Hans Zimmer — Tynda Music", v="panorama", dates=["2026-11-14"], time="19:00",
          u="https://iticket.uz/en/events/concerts/the-music-of-hans-zimmer-tynda-music",
-         d="Film music by Hans Zimmer performed by a symphony orchestra and choir.",
+         d="Film music by Hans Zimmer performed by a symphony orchestra and choir. Children from 5 need their own ticket.",
          p="230,000–700,000 UZS", img=IT + "qEutxJne5Fk4pgjwiFAOL0C0oWsF2gW1a9DtH03s.jpg", f=["crossover"]),
-
+    dict(t="The Music of Ludovico Einaudi — Tynda Music", v="turkiston", dates=["2026-11-15"], time="19:00",
+         u="https://www.afisha.uz/ru/concerts/2026/06/11/ludovico", btn="Details (RU)",
+         d="Chamber ensemble Tynda Music plays well-known pieces by the Italian composer Ludovico Einaudi, including music from the film The Intouchables.",
+         p="190,000–780,000 UZS", img=AF + "2026/06/ed399b7dcfa9c767f3f1106176e0827f_m.webp", f=["crossover"]),
     dict(t="MICHAEL: Legendary Hits — Turkiston Chamber Orchestra", v="turkiston", dates=["2026-11-25"], time="19:00",
          u="https://iticket.uz/en/events/concerts/michael-legendarnye-hity",
          d="Orchestral arrangements of Michael Jackson songs, including Billie Jean, Bad, Smooth Criminal, Thriller and Black or White.",
-         p="66,000–275,000 UZS", img=IT + "7My29fzdiw9mf3TTAKc90ML5DRxDjwbYUSAlmtxo.jpg", f=["crossover"]),
+         p="66,000–275,000 UZS", img=None, f=["crossover"]),
     dict(t="Tamerlano (Handel)", v="navoi", range=["2026-11-02", "2026-11-04"], time="19:00",
          u="https://iticket.uz/en/events/concerts/tamerlano-2026",
-         d="Handel's opera directed by Stefano Poda, in an arrangement by Kirill Richter. National Symphony Orchestra of Uzbekistan, conductor Alibek Kabdurakhmanov, with traditional Uzbek instruments.",
+         d="Handel's opera directed by Stefano Poda, in an arrangement by Kirill Richter. National Symphony Orchestra of Uzbekistan, conductor Alibek Kabdurakhmanov, with traditional Uzbek instruments. 12+.",
          p="100,000–800,000 UZS", img=IT + "ekdExRDpGo188AcZzhtZR0btOQNcWgg5YvIwIh9W.jpg",
-         badges=[("3 performances", "new")], f=["opera"]),
+         badges=[("3 performances", "new"), ("Few seats left", "hot")], f=["opera"]),
     dict(t="La Traviata (Verdi)", v="navoi", dates=["2026-11-08"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/dzh-verdi-traviata-opera-2626",
          d="Verdi's opera in three acts.",
-         p="77,000–440,000 UZS", img=IT + "i4VLvZ1iN3Rxt35CrPO3v2NFVv4qxgX8oNB5Otgk.jpg", f=["opera"]),
+         p="55,000–165,000 UZS", img=IT + "i4VLvZ1iN3Rxt35CrPO3v2NFVv4qxgX8oNB5Otgk.jpg", f=["opera"]),
     dict(t="Alisher Navoi (Mustafo Bafoev)", v="navoi", dates=["2026-11-10"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/m-bafoev-aliser-navoi-opera-9714",
-         d="Opera by Mustafo Bafoev about the life of the 15th-century poet and statesman Alisher Navoi.",
+         d="Opera by Mustafo Bafoev about the life of the 15th-century poet and statesman Alisher Navoi. 12+.",
          p="55,000–165,000 UZS", img=IT + "OFpifJGjvxRtXfCVMkTGs3BVPl2ejF1BPZGj7K4b.jpg", f=["opera"]),
     dict(t="Don Giovanni (Mozart)", v="navoi", dates=["2026-11-14"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/vamocart-don-zhuan-opera-2626",
          d="Mozart's opera in two acts.",
-         p="77,000–440,000 UZS", img=IT + "S4FjY4VGnklyB7uOwD7n3tjJwYUfjLCZZRTYAX9u.jpg", f=["opera"]),
+         p="55,000–165,000 UZS", img=IT + "S4FjY4VGnklyB7uOwD7n3tjJwYUfjLCZZRTYAX9u.jpg", f=["opera"]),
     dict(t="Pagliacci (Leoncavallo)", v="navoi", dates=["2026-11-15"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/rleonkavallo-payacy-opera-9458",
-         d="Leoncavallo's opera in two acts, set among a travelling theatre troupe.",
+         d="Leoncavallo's opera in two acts, set among a travelling theatre troupe. 12+.",
          p="55,000–165,000 UZS", img=ITC + "QZtusilsj1kCteXDi7z6zD9ei4PUxNAnElwSbU7G.jpg", f=["opera"]),
     dict(t="Un ballo in maschera (Verdi)", v="navoi", dates=["2026-11-19"], time="19:00",
-         u="https://www.afisha.uz/ru/concerts/2024/10/08/g-verdi", btn="Tickets (RU)",
-         d="Verdi's opera, performed in two acts.",
-         p="From 55,000 UZS", img=AF + "2024/10/2b200358b5e7b14fb0d7bbe2f14b082f_m.jpg", f=["opera"]),
+         u="https://iticket.uz/en/events/theaters-tashkent/dz-verdi-bal-maskarad-opera-9722",
+         d="Verdi's opera, performed in two acts. 12+.",
+         p="55,000–165,000 UZS", img=IT + "DTeSm25th2GkUB41h2R3x5fx8ppcQqB6hDx2wdZ0.jpg", f=["opera"]),
     dict(t="La Bohème (Puccini)", v="navoi", dates=["2026-11-21"], time="19:00",
          u="https://www.afisha.uz/ru/theatres/2025/03/04/bogema", btn="Tickets (RU)",
          d="Puccini's opera, with the State Symphony Orchestra of Uzbekistan.",
-         p="From 55,000 UZS", img=AF + "2025/03/946620b27a8c8241c4e1fa831693c10d_m.webp", f=["opera"]),
+         p="40,000–165,000 UZS", img=AF + "2025/03/946620b27a8c8241c4e1fa831693c10d_m.webp", f=["opera"]),
     dict(t="Carmen (Bizet)", v="navoi", dates=["2026-11-22"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/zhorzh-bize-karmen-opera",
-         d="Bizet's opera in a new production by Konstantin Kamynin, set in Spain in the 1940s–50s.",
+         d="Bizet's opera in a new production by Konstantin Kamynin, set in Spain in the 1940s–50s. 12+.",
          p="110,000–330,000 UZS", img=IT + "lQUeJ9lAxQ4BB96nLKg9iVDbgirMOyraweAmTRe0.jpg",
          badges=[("New production", "new")], f=["opera"]),
     dict(t="Jazzirama — IlkhomJazzClub", v="ilkhom", dates=["2026-11-03"], time="19:00",
          u="https://www.afisha.uz/ru/concerts/2026/10/13/jazzirama-11", btn="Tickets (RU)",
-         d="Season opening of the IlkhomJazzClub. Tashkent band Jazzirama with guest vocalists including Mansur Tashmatov and maqom singer Nodira Pirmatova: jazz standards, ethno-jazz and improvisation.",
+         d="Season opening of the IlkhomJazzClub. Tashkent band Jazzirama with guest vocalists including Mansur Tashmatov and maqom singer Nodira Pirmatova: jazz standards, ethno-jazz and improvisation. About 1 hr 30 min.",
          p="240,000–290,000 UZS", img=AF + "2026/10/fc7f51f39f3074272c0646f5856e9796_m.webp", f=["jazz"]),
-
+    dict(t="Cheb Mami", v="humo", dates=["2026-11-07"], time="20:00",
+         u="https://iticket.uz/en/events/concerts/cheb-mami",
+         d="Algerian raï singer Cheb Mami in his first concert in Tashkent. 5+.",
+         p="150,000–2,000,000 UZS", img=None, f=["jazz"]),
     dict(t="KALEO", v="humo", dates=["2026-11-27"], time="19:00",
          u="https://showgo.uz/en/session/1165-kaleo-live-in-tashkent",
          d="Icelandic blues-rock band.",
-         p="From 250,000 UZS", img=SG + "2026/09/cropped_20260907114146_lrqs_05261C4D-B221-4918-89BE-420BF156B13E.jpg",
-         pos="center 30%", f=["jazz"]),
-
-
-    dict(t="Cheb Mami", v="humo", dates=["2026-11-07"], time="20:00",
-         u="https://iticket.uz/en/events/concerts/cheb-mami",
-         d="Algerian raï singer Cheb Mami in his first concert in Tashkent.",
-         p="150,000–2,000,000 UZS", img=IT + "jzp3aCFiqfPGykFUOudYAdj566hzkHzFCSiFyQHh.jpg", f=["jazz"]),
-
-
-
-
-
-
-
-
-
-
-
-
+         p="From 250,000 UZS", img=None, f=["jazz"]),
+    dict(t="Rock Hits — Tynda Music", v="turkiston", dates=["2026-11-28"], time="19:00",
+         u="https://www.afisha.uz/ru/concerts/2026/10/28/tynrock-2811", btn="Details (RU)",
+         d="Almaty band Tynda Music plays 90 minutes of rock covers from the 1970s to the 2000s, including Led Zeppelin, AC/DC, Pink Floyd, Queen, Metallica, Nirvana and Linkin Park. No entry under 5; children from 5 need their own ticket.",
+         p="210,000–780,000 UZS", img=AF + "2026/10/7b19f20032aabe279db632396e5e7032_m.webp", f=["jazz"]),
 ]
 
 # ---------------------------------------------------------------- THEATRE & FILM
@@ -455,27 +470,15 @@ THEATRE = [
          badges=[("English surtitles", "eng"), ("Live music", "")], f=["stage"]),
     dict(t="Charlie and the Sea Lions", v="circus", range=["2026-10-31", "2026-12-06"],
          u="https://showgo.uz/en/session/1328-tsirk-charli-i-morskie-kotiki-tashkent-2026",
-         d="Russian circus programme at the State Circus, featuring clown Charlie from Germany and a sea lion act. Runs until 6 December.",
-         p="From 70,000 UZS", img=SG + "2026/10/cropped_20261028071204_lbjl_photo_2026-10-28_12-10-55.jpg",
+         d="Circus programme at the State Circus opening the new season: a sea lion act, clown Charlie from Germany, and about 30 aerialists, acrobats, jugglers and equilibrists. About 2 hours. Runs until 6 December.",
+         p="70,000–350,000 UZS", img=SG + "2026/10/cropped_20261028071204_lbjl_photo_2026-10-28_12-10-55.jpg",
          pos="center 30%", ph="Circus", badges=[("Visual show", "eng")], f=["stage", "family"]),
-    dict(t="Planètes (2025)", v="kinoxona", dates=["2026-11-01"], time="12:00",
-         u="https://showgo.uz/en/session/1396-odisseia-oduvanchikov-planetes-2025",
-         d="Animated film by Momoko Seto, selected for the Directors' Fortnight at Cannes: after Earth is destroyed, four dandelion seeds travel through space. Combines macro photography and computer animation.",
-         meta="No dialogue.",
-         p="90,000 UZS", img=SG + "2026/10/cropped_20261028070436_ykas_7.jpg", pos="center 30%", ph="kinoxona",
-         badges=[("No dialogue", "eng")], f=["film"]),
-    dict(t="The Little Shop of Horrors (1960)", v="kinoxona", dates=["2026-11-01"], time="16:00",
-         u="https://showgo.uz/en/session/1392-malenkii-magazinchik-uzhasov-the-little-shop-of-horrors-1960",
-         d="Roger Corman's black comedy about a florist's assistant and a carnivorous plant.",
-         meta="Original English audio with Russian subtitles.",
-         p="90,000 UZS", img=SG + "2026/10/cropped_20261028064610_tzol_3_2.jpg", pos="center 30%", ph="kinoxona",
-         badges=[("In English", "eng")], f=["film"]),
-    dict(t="Lil Peep: Everybody's Everything (2019)", v="kinoxona", dates=["2026-11-01"], time="19:30",
-         u="https://showgo.uz/en/session/1395-lil-peep-vsio-dlia-vsekh-everybodys-everything-2019",
-         d="Documentary about the musician Lil Peep, drawing on his music, home video and interviews with people close to him.",
-         meta="Original English audio with Russian subtitles.",
-         p="90,000 UZS", img=SG + "2026/10/cropped_20261028082900_hqkq_4.jpg", pos="center 30%", ph="kinoxona",
-         badges=[("In English", "eng"), ("Few seats left", "hot")], f=["film"]),
+    dict(t="Shadows of My House — audio play", v="ichkari", range=["2026-11-02", "2026-11-30"],
+         u="https://www.afisha.uz/ru/gorod/2026/09/23/teni-doma", btn="Details & tickets (RU)",
+         d="Audio play that accompanies the ICHKARI museum's exhibition. Visitors move through an old family house as the main character, a woman who grew up there, recalls the house, old Tashkent and its customs. About 2 hours.",
+         meta="Audio available in English, Uzbek and Russian. Listed daily 2–30 November; choose a date when booking.",
+         p="60,000 UZS", img=AF + "2026/10/c99a63573a6751860f4419f09cbd5d7f_m.webp", pos="center 35%", ph="ICHKARI",
+         badges=[("In English", "eng")], f=["stage"]),
     dict(t="The Cat in the Hat", v="cinematica", opens="2026-11-05",
          u="https://cinematica.uz/movies/1049", btn="Details",
          d="Animated Dr. Seuss adaptation in which the Cat, voiced by Bill Hader, visits two siblings stuck indoors on a rainy day.",
@@ -492,7 +495,7 @@ THEATRE = [
          u="https://cinematica.uz/movies/1071", btn="Details",
          d="Prequel set 24 years before the original trilogy, in which a young Haymitch Abernathy competes in the 50th Hunger Games. Directed by Francis Lawrence; cast includes Ralph Fiennes, Elle Fanning and Glenn Close. 12+.",
          meta=CM_META,
-         p=CM_PRICE, img=CM + "63dfd810-9da2-4ff0-94b6-6b8fd3aa03d8.png", ph="Cinematica",
+         p=CM_PRICE, img=None, ph="Cinematica",
          badges=[("In English", "eng")], f=["film"]),
 ]
 
@@ -505,7 +508,7 @@ DANCE = [
          badges=[("Matinee", ""), ("Family", "")], f=["family"]),
     dict(t="The Firebird & Scheherazade", v="navoi", dates=["2026-11-07"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/istravinskii-zar-ptica-n-rimskii-korsakov-sexerazada-9460",
-         d="Double bill of Stravinsky's The Firebird and Rimsky-Korsakov's Scheherazade.",
+         d="Double bill of Stravinsky's The Firebird and Rimsky-Korsakov's Scheherazade. 12+.",
          p="77,000–220,000 UZS", img=IT + "FvJkI90rpzLeeblcDWq8bZW1Fl2moZEm7QxDuo0F.jpg", f=["ballet"]),
     dict(t="Romeo and Juliet (Prokofiev)", v="navoi", dates=["2026-11-13"], time="19:00",
          u="https://iticket.uz/en/events/theaters-tashkent/sprokofev-romeo-i-dzuletta-balet-9464",
@@ -524,7 +527,7 @@ SPORT = [
 
 PAGES = [
     ("art", "Art", "Exhibition", [("free", "Free entry"), ("closing", "Closing in the next 30 days"), ("long", "Running longer")], ART),
-    ("music", "Music", "Music", [("classical", "Classical & organ"), ("opera", "Opera"), ("crossover", "Film & crossover"),
+    ("music", "Music", "Music", [("classical", "Classical"), ("opera", "Opera"), ("crossover", "Film & crossover"),
                                  ("jazz", "Jazz, rock & world")], MUSIC),
     ("theatre", "Theatre & Film", "Theatre", [("stage", "Stage"), ("film", "Film"), ("family", "Family")], THEATRE),
     ("dance", "Dance", "Ballet", [("ballet", "Ballet"), ("family", "Family")], DANCE),
@@ -541,7 +544,8 @@ CAL_CSS = """
 .tel-day.is-today h3 .tel-today{display:inline-block}
 .tel-row{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--tel-line)}
 .tel-row:last-child{border-bottom:0}
-.tel-row[hidden],.tel-day[hidden],.tel-time{font-size:.85rem;font-weight:700;color:var(--tel-navy);padding-top:1px}
+.tel-row[hidden],.tel-day[hidden]{display:none}
+.tel-time{font-size:.85rem;font-weight:700;color:var(--tel-navy);padding-top:1px}
 .tel-row .tel-title{font-size:.95rem;margin:0 0 3px}
 .tel-row .tel-badge{display:inline-block;margin-left:6px;vertical-align:1px;box-shadow:none;background:var(--tel-chip)}
 .tel-row .tel-badge.eng{background:#1d4ed8;color:#fff}
@@ -560,9 +564,10 @@ CAL_CSS = """
 CAL_JS = """(function(){var r=document.getElementById('tel-calendar');if(!r)return;
 var now=new Date(Date.now()+5*36e5).toISOString().slice(0,10);
 var days=r.querySelectorAll('.tel-day');for(var i=0;i<days.length;i++){var dd=days[i].getAttribute('data-day');if(dd<now){days[i].remove();}else if(dd===now){days[i].classList.add('is-today');}}
-var og=r.querySelectorAll('var tabs=r.querySelectorAll('.tel-tab');
+var tabs=r.querySelectorAll('.tel-tab');
 function apply(t){var rows=r.querySelectorAll('.tel-row');for(var k=0;k<rows.length;k++){rows[k].hidden=!(t==='all'||rows[k].getAttribute('data-f')===t);}
-var groups=r.querySelectorAll('.tel-day,for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');tabs[j].setAttribute('aria-selected','false');}this.classList.add('on');this.setAttribute('aria-selected','true');apply(this.getAttribute('data-f'));});}
+var groups=r.querySelectorAll('.tel-day');for(var g=0;g<groups.length;g++){groups[g].hidden=!groups[g].querySelector('.tel-row:not([hidden])');}}
+for(var i=0;i<tabs.length;i++){tabs[i].addEventListener('click',function(){for(var j=0;j<tabs.length;j++){tabs[j].classList.remove('on');tabs[j].setAttribute('aria-selected','false');}this.classList.add('on');this.setAttribute('aria-selected','true');apply(this.getAttribute('data-f'));});}
 apply('all');})();"""
 
 SHORT_RUN_DAYS = 7   # ranges under a week are shown on each day; longer runs are left off the calendar
