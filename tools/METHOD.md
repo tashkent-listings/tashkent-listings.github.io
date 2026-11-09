@@ -68,7 +68,7 @@ The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha
 
 ## Building
 
-All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and SPORT lists). Edit the data there. Items can carry dates beyond the window; the build keeps only the dates inside it.
+All listing data lives in `tools/build.py` (the ART, MUSIC, THEATRE, DANCE and SPORT lists). Edit the data there. Items can carry dates beyond the window; the build keeps only the dates inside it. When an event's time differs from day to day, give `times={"YYYY-MM-DD": "19:30", ...}` alongside `dates`; the card and the calendar then show each day's own time.
 
 - Write descriptions in plain English, in your own words, and don't copy source text.
 - Badges: "In English", "English surtitles", "No dialogue", "Visual show", "Free", "Few seats left" (under about 60 tickets left), "Closes …", "New production".
