@@ -42,7 +42,7 @@ These are expat listings. Every listing must be in English or not depend on lang
 
 ## Sources and how to read them
 
-The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha.uz, ilkhom.com, cinematica.uz, ccat.uz. Use curl or Python for them.
+The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha.uz, ilkhom.com, cinematica.uz, ccat.uz and t.me (public Telegram channels, added 16 Nov 2026). Use curl or Python for them. Instagram and Facebook can't be reached.
 
 - **iTicket** (Navoi Theatre opera and ballet, the Conservatory, Humo Arena, the Palace of Friendship of Peoples, Turkiston, Panorama, sport):
   - list: `https://api.iticket.uz/en/v5/events?client=web&category_slug={concerts|theaters-tashkent|cultural-events|sport|kids|other-events}&page=N` (15 per page; follow `next_page_url`)
@@ -62,9 +62,56 @@ The shell can reach these domains: iticket.uz, *.iticket.uz, showgo.uz, *.afisha
   - Posters: `file_poster` (horizontal) from `/api/v1/movies/{id}`. Cinematica's API doesn't flag language.
   - Price: the standard-hall range from current sessions (`/api/v1/repertory/movie/{id}/grouped`; ignore the VIP hall). On 31 Oct 2026 this was 35,000–70,000 UZS.
   - If Instagram can't be read, keep the existing cards and flag it in the summary.
-- **kinoxona art cinema** (17 Chimkent St): films are shown in the original language with Russian subtitles. Include only English-language films, plus films with no dialogue. The programme appears about a week ahead on ShowGo (venue "Кинозал Чимкент, 17").
+- **kinoxona art cinema** (17 Chimkent St): films are shown in the original language with Russian subtitles. Include only English-language films, plus films with no dialogue. The weekly programme is posted on Telegram at t.me/s/kinoxona_tfs ("Программа на неделю", usually Monday); tickets then appear on ShowGo (venue "Кинозал Чимкент, 17"). If ShowGo has nothing yet, check the Telegram post.
 - **CCA Tashkent**: `https://ccat.uz/en/programme/...`. Check the homepage for closure notices.
-- **Sport**: Pakhtakor, Uzbekistan national team, big tournaments in Tashkent. Use web search; iTicket's sport category has tickets once they're on sale.
+- **Sport**: Pakhtakor, Uzbekistan national team, big tournaments in Tashkent. Use web search; iTicket's sport category has tickets once they're on sale. Pakhtakor's Telegram (t.me/s/pakhtakor_fc, Uzbek Cyrillic) posts fixtures, kick-off times and "чипталар сотувга чиқарилди" (tickets on sale). The Super League runs into late November. Check whether home or away games are in Tashkent: Pakhtakor, Lokomotiv and Bunyodkor all play in the city.
+
+### Telegram channels
+
+Read a public channel at `https://t.me/s/{handle}`; add `?q={word}` to search it (e.g. `?q=English`). Each post has a date. Telegram is a source of leads: confirm the date, time and price on the ticket seller or Afisha, and link there. Use images from the ticket seller or Afisha, not Telegram (its image links may expire). Found on 16 Nov 2026:
+
+- **Film:**
+  - `kinoxona_tfs`: kinoxona's weekly programme.
+  - `tashkentfimschool`: Tashkent Film School, which runs kinoxona; festivals and special screenings.
+  - `moc24`: moc hub, 77 Buyuk Turon; talks and screenings.
+  - `nomsizfestival`: experimental film festival at moc hub, in November.
+  - `ohtndocumentarycenter`: 139 Documentary Center; screenings and events.
+  - `cinemaplexuz`: "English Movies at Cinemaplex", Chigatay mall; occasional English-language screenings, last post April 2026.
+  - `Milliy_kino_sanati_saroyi`: Panorama; the daily film schedule states each film's language.
+  - `premiercinemauz`: Premier Cinema; weekly schedule.
+- **Music and stage:**
+  - `gabtuzb`: Navoi Theatre, in Uzbek; announces small-stage concerts a few days ahead.
+  - `filarmoniyauz`: State Philharmonic; mostly news.
+  - `ilkhomtheatre`: Ilkhom; plays, foyer exhibitions, music evenings.
+  - `vmbar`: VM bar gigs; some sung in English.
+  - `hangaruz`: Hangar; concerts, screenings, markets.
+  - `humanhouse_event`: Human House; weekly programme.
+  - `bravo_orchestra`: Bravo Orchestra; tour dates.
+- **Art:**
+  - `cca_tashkent`: CCA; posts in English.
+  - `acdfuz`: Art and Culture Development Foundation.
+  - `haqiqiyproject`: Haqiqiy gallery and painting markets.
+  - `regenerationartfest`: RE/GENERATION, young artists.
+  - `ichkari_tashkent`: ICHKARI museum.
+  - `artacademyuz`: Academy of Arts.
+  - `acdflibrary_official`: Republican Children's Library.
+  - `tamyrart`: Tamyr Art Lab.
+  - `tashkent_modernism`: modernism walking tours.
+- **Cultural centres:**
+  - `ACTashkent`: American Center, in English.
+  - `AFtachkent`: Alliance Française.
+  - `goetheinstituttaschkent`: Goethe-Institut.
+- **Aggregators:**
+  - `afishauz` (RU) and `afishauzb` (UZ): Afisha.uz.
+  - `iticket_tg`: iTicket new releases.
+- **Language-dependent theatres** (only useful for spotting surtitled shows):
+  - `gardtuzbekistana`: Russian Drama Theatre.
+  - `Muqimiyteatruz`: Muqimiy musical theatre.
+  - `drugiezveri`: Drugie Zveri independent theatre.
+  - `Uzntk`: puppet theatre.
+- **Not on Telegram, or no usable channel:**
+  - Cinematica and the English Movie Club: Instagram and Facebook only.
+  - Turkiston Palace, State Circus, Conservatory concerts, Tynda Music, Humo Arena and the Operetta Theatre (its channel has been dead since 2021).
 
 ## Building
 
